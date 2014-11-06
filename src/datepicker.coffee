@@ -82,14 +82,15 @@ module.exports = class Datepicker extends ViewHelpers
     @gotoDecadeView nextDecadeDate
   
   select: (selectedDate) ->
+    previousDate = @model.get "active"
     date = moment(selectedDate.fullDate)
     selectedMonth = date.month()
     currentDate = moment(@getCurrentDate())
     currentMonth = currentDate.month()
-    @emitDelayable "select", =>
-      @gotoMonthView date  if selectedMonth isnt currentMonth
-      @model.set "active", selectedDate.fullDate
-      @model.set "show", false
+    @gotoMonthView date  if selectedMonth isnt currentMonth
+    @model.set "active", selectedDate.fullDate
+    @model.set "show", false
+    @emit "select", previousDate
 
   prevMonth: ->
     # get current month
