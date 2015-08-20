@@ -20,7 +20,7 @@ module.exports = class Datepicker extends ViewHelpers
         model.set "show", true, =>
           @emit "show"
     dom.on "mousedown", (e) =>
-      unless @parent.contains(e.target)
+      unless @parent.contains(e.target) or not model.get "show"
         model.set "show", false, => 
           @emit "cancel"
 
@@ -82,15 +82,16 @@ module.exports = class Datepicker extends ViewHelpers
     @gotoDecadeView nextDecadeDate
   
   select: (selectedDate) ->
-    previousDate = @model.get "active"
-    date = moment(selectedDate.fullDate)
-    selectedMonth = date.month()
-    currentDate = moment(@getCurrentDate())
-    currentMonth = currentDate.month()
-    @gotoMonthView date  if selectedMonth isnt currentMonth
-    @model.set "active", selectedDate.fullDate
-    @model.set "show", false
-    @emit "select", previousDate
+    @emitDelayable "preselect", =>
+      previousDate = @model.get "active"
+      date = moment(selectedDate.fullDate)
+      selectedMonth = date.month()
+      currentDate = moment(@getCurrentDate())
+      currentMonth = currentDate.month()
+      @gotoMonthView date  if selectedMonth isnt currentMonth
+      @model.set "active", selectedDate.fullDate
+      @model.set "show", false
+      @emit "select", previousDate
 
   prevMonth: ->
     # get current month
